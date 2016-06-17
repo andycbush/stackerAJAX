@@ -1,0 +1,184 @@
+list of web APIs - https://developer.mozilla.org/en-US/docs/Web/API
+
+Ajax is a client-side script that communicates to and from a server/database without
+the need for a postback or a complete page refresh. The best definition I've read for
+Ajax is “the method of exchanging data with a server, and updating parts of a web page
+- without reloading the entire page.”
+
+
+var xhr = new XMLHttpRequest();
+callback function: how to respond to data recieved from request
+xhr.open("GET", "https://www.codeacademy.com/", false);
+xhr.send();
+
+
+A RESTful API
+An API, or application programming interface, is kind of like a coding contract: it
+specifies the ways a program can interact with an application. For example, if you
+want to write a program that reads and analyzes data from Twitter, you'd need to use
+the Twitter API, which would specify the process for authentication, important URLs,
+classes, methods, and so on.
+
+For an API or web service to be RESTful, it must do the following:
+
+Separate the client from the server
+Not hold state between requests (meaning that all the information necessary to respond
+to a request is available in each individual request; no data, or state, is held by
+the server from request to request)
+Use HTTP and HTTP methods (as explained in the next section).
+There are some other requirements, but they're beyond the scope of this lesson.
+
+The Four Verbs
+The number of HTTP methods you'll use is quite small—there are just four HTTP "verbs"
+you'll need to know! They are:
+
+GET: retrieves information from the specified source (you just saw this one!)
+POST: sends new information to the specified source.
+PUT: updates existing information of the specified source.
+DELETE: removes existing information from the specified source.
+So when we sent our GET request to codecademy.com, we retrieved information. When you
+add to or update your blog, you're sending POST or PUT requests; when you delete a
+tweet, there goes a DELETE request.
+
+Anatomy of a Request
+An HTTP request is made up of three parts:
+
+1.The request line, which tells the server what kind of request is being sent
+(GET, POST, etc.) and what resource it's looking for;
+2.The header, which sends the server additional information (such as which client is
+making the request)
+3.The body, which can be empty (as in a GET request) or contain data (if you're
+POSTing or PUTing information, that information is contained here).
+
+This is what a typical request looks like! Note the POST information in the request
+line, the header information below it, and the data to be POSTed at the bottom
+
+// POST /codecademy/learn-http HTTP/1.1
+// Host: www.codecademy.com
+// Content-Type: text/html; charset=UTF-8
+
+// Name=Eric&Age=26
+
+Endpoints
+Endpoints are API-defined locations where particular data are stored. Just as you'll
+GET a pair of pants from PantsWorld or you'll GET a bag of peanuts from PeanutHut,
+you'll GET something different depending on the endpoint you use.
+
+For instance, if you're using the API for a video hosting service, there might be
+endpoints for the most popular videos, the most recent videos, or videos belonging to
+a certain genre or category.
+
+Endpoints are special URLs that can be used to access the API. Most APIs have multiple
+endpoints for the specific types of data you want to access.
+
+HTTP Status Codes
+A successful request to the server results in a response, which is the message the
+server sends back to you, the client.
+
+The response from the server will contain a three-digit status code. These codes can
+start with a 1, 2, 3, 4, or 5, and each set of codes means something different. (You
+can read the full list here). They work like this:
+
+1xx: You won't see these a lot. The server is saying, "Got it! I'm working on your
+request."
+
+2xx: These mean "okay!" The server sends these when it's successfully responding to
+your request. (Remember when you got a "200" back from Codecademy?)
+
+3xx: These mean "I can do what you want, but I have to do something else first." You
+might see this if a website has changed addresses and you're using the old one; the
+server might have to reroute the request before it can get you the resource you asked
+for.
+
+4xx: These mean you probably made a mistake. The most famous is "404," meaning "file
+not found": you asked for a resource or web page that doesn't exist.
+
+5xx: These mean the server goofed up and can't successfully respond to your request.
+
+
+Anatomy of a Response
+The HTTP response structure mirrors that of the HTTP request. It contains:
+
+A response line, which includes the three-digit HTTP status code;
+
+A header, which includes further information about the server and its response;
+
+The body, which contains the text of the response.
+
+// HTTP/1.1 200 OK
+// Content-Type: text/xml; charset=UTF-8
+
+// <?xml version="1.0" encoding="utf-8"?>
+// <string xmlns="http://www.codecademy.com/">Accepted</string>
+
+Parsing XML
+XML (which stands for E xtensible Markup Language) is very similar to HTML—it uses
+tags between angle brackets. The difference is that XML allows you to use tags that
+you make up, rather than tags that the W3C decided on. For instance, you could create
+an API that returns information about a pet:
+
+<pet>
+<name>Jeffrey</name>
+<species>Giraffe</species>
+</pet>
+As long as you document the structure of your API's response, other people can use
+your API to get information about <pet>s.
+
+var xhr = new XMLHttpRequest();
+xhr.open("GET", "https://www.codecademy.com/files/samples/javascript_learn_apis.xml", false);
+
+xhr.setRequestHeader('Content-Type', 'text/xml');
+xhr.send();
+
+xmlDocument = xhr.responseXML;
+console.log(xmlDocument.childNodes['0'].textContent);
+
+Parsing JSON
+JSON (which stands for Java Script Object Notation) is an alternative to XML. It gets its name from the fact that its data format resembles JavaScript objects, and it is often more succinct than the equivalent XML. For instance, our same <pet> Jeffrey would look like this in JSON:
+
+{
+"pets": {
+"name": "Jeffrey",
+"species": "Giraffe"
+}
+}
+Look, ma! No tags!
+
+var demo = '{"pets": { "name": "Jeffrey", "species": "Giraffe"}}';
+
+var json = JSON.parse(demo);
+console.log(json);
+
+XML or JSON?
+This leads us to wonder, though: how do we know whether an API will reply with XML or
+JSON?
+
+The only way you'll know what type of data an API will send you is to read that API's
+documentation! Some will reply with one, and some will reply with the other.
+Documentation is a programmer's best friend, and it's always in your best interest to
+read it so you understand that what the API expects from you and what the API intends
+to send you when you make a request.
+
+The Query String
+You now know omdbapi.com is an endpoint, but what's ?s=Star%20Wars&r=json?
+?s=Star%20Wars&r=json is called a query string. Query strings allow you to send requests
+to servers to get information. In this case the "s" stands for "search" and the "r"
+stands for "request type." These names (s and r) were defined on the OMDB page. There
+is no standardization across databases for these name-value pairs. The question mark at
+the beginning tells the server that it's about to receive a query string. The '&'
+separates the name-value pairs. Go to Amazon.com, click on a product and look up at
+the URL. You will be able to spot the query string and even pick out the name-value
+pairs.
+
+Spotify
+Bandsintown
+NPR
+Library of Congress
+Climatecounts
+IP-API.com Geolocation
+This is my jam
+Numbers
+World Population API
+
+
+
